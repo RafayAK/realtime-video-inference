@@ -1,0 +1,9 @@
+# Python
+*.pyc
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# From Docker and project files
+*.log 
