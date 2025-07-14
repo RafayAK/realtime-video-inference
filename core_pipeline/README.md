@@ -112,7 +112,7 @@ ERRORS:
 
 Producer and server logs are available in `producer.log` and `inference_service.log` respectively.
 
-## �️ Makefile Commands
+## Makefile Commands
 
 For convenience, use the included Makefile:
 
@@ -133,7 +133,7 @@ make test           # Run end-to-end test
 make restart        # Quick restart services
 ```
 
-## �🔧 Configuration
+## 🔧 Configuration
 
 ### Environment Variables
 
@@ -246,18 +246,6 @@ Metrics are printed every 10 seconds and at the end of each run.
    # Verify Python dependencies
    docker-compose exec inference_service pip list
    ```
-
-
-## 📈 Assignment Requirements Coverage
-
-| Requirement | ✅ Implementation |
-|-------------|------------------|
-| **PyTorch Model** | ResNet18 with ImageNet classes |
-| **gRPC API** | Custom inference service with health checks |
-| **Docker Microservice** | Multi-stage build with health probes |
-| **Kafka Streaming** | Producer/consumer with Redpanda |
-| **Performance Logging** | Latency, throughput, and error metrics |
-| **Frame Processing** | JPEG/base64 encoded frame streaming |
 
 ## 🛠️ Development
 
