@@ -26,7 +26,7 @@ core_pipeline/
 ├── requirements.txt            # Python dependencies created with uv
 ├── generate_grpc.sh           # Script to generate gRPC code
 ├── producer.log                # Log file for redpanda producer output, mounted in Docker
-├── consumer.log                # Log file for redpanda consuer output, mounted in Docker
+├── consumer.log                # Log file for redpanda consumer output, mounted in Docker
 ├── inference_service.log      # Log file for inference service output, mounted in Docker
 ├── Makefile                   # Convenience commands for setup and running
 └── README.md                  # This file
@@ -260,7 +260,7 @@ Metrics are printed every **30 seconds** and at the end of each run:
 ### Local Development
 
 **NOTE:** This requirements.txt was generated with uv package manager:
-`uv export --no-dev --no-hashes --format requirements-txt > requirements.txt**`
+`uv export --no-dev --no-hashes --format requirements-txt > requirements.txt`
 
 ```bash
 # Install dependencies
