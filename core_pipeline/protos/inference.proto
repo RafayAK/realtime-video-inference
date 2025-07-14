@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package inference;
+
+// Service definition
+service InferenceService {
+    rpc ClassifyImage(ImageRequest) returns (ClassificationResponse);
+    rpc HealthCheck(HealthRequest) returns (HealthResponse);
+}
+
+// Message for image classification request
+message ImageRequest {
+    bytes image_data = 1;  // JPEG encoded image
+    string image_id = 2;   // Optional identifier
+}
+
+// Message for classification response
+message ClassificationResponse {
+    string predicted_class = 1;
+    float confidence = 2;
+    double inference_time = 3;  // in seconds
+    string image_id = 4;
+}
+
+// Health check messages
+message HealthRequest {}
+
+message HealthResponse {
+    bool healthy = 1;
+    string status = 2;
+}
