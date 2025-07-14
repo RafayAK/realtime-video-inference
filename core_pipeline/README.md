@@ -206,15 +206,23 @@ python streaming_simulator/producer.py --kafka-servers localhost:19092 --topic f
 
 ## 📊 Performance Metrics
 
-The system automatically tracks and logs:
+The system automatically tracks and logs performance metrics in three key categories:
 
-- **Latency**: Inference time per frame
-- **Throughput**: Frames processed per second
-- **Error Rate**: Failed inference attempts
-- **Moving Averages**: Recent performance trends
+### THROUGHPUT
+- **Frames Processed**: Total number of frames successfully processed
+- **Overall FPS**: Average frames per second across total runtime
+- **Effective FPS**: Higher frames per second rate calculated only during active processing time
 
-Metrics are printed every 10 seconds and at the end of each run.
+### PROCESSING TIME
+- **Average Inference Time**: Mean processing time per frame in milliseconds
+- **Recent Average**: Moving average of the last 100 frames
+- **Range**: Min-max processing times to show performance variability
 
+### ERRORS
+- **Total Errors**: Count of failed processing attempts
+- **Error Rate**: Percentage of frames that failed processing
+
+Metrics are printed every **30 seconds** and at the end of each run:
 
 ## 🔍 Troubleshooting
 
