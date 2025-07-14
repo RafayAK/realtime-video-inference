@@ -19,6 +19,7 @@ logger.add("inference_service.log", rotation="1MB", level="DEBUG")
 
 class InferenceServicer(inference_pb2_grpc.InferenceServiceServicer):
     def __init__(self):
+        """Initialize the inference service"""
         self.model = None
         self.transform = None
         self.class_names = None

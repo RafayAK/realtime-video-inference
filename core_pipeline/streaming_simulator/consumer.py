@@ -20,8 +20,15 @@ import inference_pb2_grpc
 logger.add("consumer.log", rotation="1MB", level="DEBUG")
 
 class InferenceConsumer:
-    def __init__(self, kafka_bootstrap_servers="localhost:9092", 
-                 kafka_topic="video_frames", grpc_server="localhost:50051"):
+    def __init__(self, kafka_bootstrap_servers:str="localhost:9092",
+                 kafka_topic:str="video_frames", grpc_server:str="localhost:50051"):
+        """Initialize the consumer
+        Args:
+            kafka_bootstrap_servers (str): Kafka bootstrap servers
+            kafka_topic (str): Kafka topic to consume
+            grpc_server (str): gRPC inference server address
+        """
+
         self.kafka_topic = kafka_topic
         self.grpc_server = grpc_server
         self.kafka_bootstrap_servers = kafka_bootstrap_servers
@@ -48,8 +55,13 @@ class InferenceConsumer:
         # Initialize gRPC client
         self._init_grpc_client()
     
-    async def _init_kafka_consumer(self, bootstrap_servers):
-        """Initialize Kafka consumer"""
+    async def _init_kafka_consumer(self, bootstrap_servers:str) -> None:
+        """Initialize Kafka consumer
+
+        Args:
+            bootstrap_servers (str): Kafka bootstrap servers
+
+        """
         try:
             self.consumer = AIOKafkaConsumer(
                 self.kafka_topic,
@@ -82,17 +94,35 @@ class InferenceConsumer:
         except grpc.RpcError as e:
             logger.error(f"Could not connect to gRPC server at {self.grpc_server}: {e}")
             raise
-    
-    def decode_frame(self, image_data):
-        """Decode base64 image data to bytes"""
+
+    @staticmethod
+    def decode_frame(image_data: str) -> bytes | None:
+        """Decode base64 image data to bytes
+
+        Args:
+            image_data (str): Base64 encoded image data
+
+        Returns:
+            bytes: Decoded image bytes, or None if decoding fails
+
+        """
         try:
             return base64.b64decode(image_data)
         except Exception as e:
             logger.error(f"Error decoding image data: {e}")
             return None
     
-    def classify_frame(self, frame_data):
-        """Send frame to gRPC service for classification"""
+    def classify_frame(self, frame_data: dict) -> dict | None:
+        """Send frame to gRPC service for classification
+
+        Args:
+            frame_data (dict): Frame data containing image and metadata
+
+        Returns:
+            dict: Classification result containing predicted class, confidence, and timing info,
+                  or None if an error occurs
+
+        """
         try:
             # Decode image
             image_bytes = self.decode_frame(frame_data["image_data"])
@@ -139,8 +169,17 @@ class InferenceConsumer:
             self.metrics["errors"] += 1
             return None
     
-    def update_metrics(self, inference_time):
-        """Update performance metrics"""
+    def update_metrics(self, inference_time: float) -> None:
+        """Update performance metrics
+
+        Updates the metrics dictionary with the latest inference time, frame count,
+        and active time. It also calculates the average inference time and keeps track
+        of the last 100 inference times for moving averages.
+
+        Args:
+            inference_time (float): Time taken for inference in seconds
+
+        """
 
         current_time = time.time()
 
@@ -203,8 +242,16 @@ class InferenceConsumer:
 
         logger.info("=" * 50)
     
-    async def consume_and_classify(self, duration_seconds=30):
-        """Main consumer loop"""
+    async def consume_and_classify(self, duration_seconds:int=30)-> None:
+        """Main consumer loop
+
+        Continuously consumes frames from Kafka, sends them to the gRPC service for classification,
+        and prints performance metrics periodically.
+
+        Args:
+            duration_seconds (int): Duration to run the consumer in seconds
+
+        """
         logger.info(f"Starting frame consumption for {duration_seconds} seconds...")
         self.metrics["start_time"] = time.time()
         

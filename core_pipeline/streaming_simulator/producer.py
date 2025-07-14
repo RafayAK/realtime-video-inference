@@ -13,6 +13,13 @@ logger.add("producer.log", rotation="1MB", level="DEBUG")
 
 class VideoFrameProducer:
     def __init__(self, kafka_bootstrap_servers: str = "localhost:9092", topic: str = "video_frames"):
+        """Initialize the producer with Kafka settings
+
+        Args:
+            kafka_bootstrap_servers (str): Kafka bootstrap servers. Default is "localhost:9092".
+            topic (str): Kafka topic to send frames to. Default is "video_frames".
+        """
+
         self.topic = topic
         self.kafka_bootstrap_servers = kafka_bootstrap_servers
         self.producer = None
@@ -34,14 +41,28 @@ class VideoFrameProducer:
 
 
     @staticmethod
-    def encode_frame(frame):
-        """Encode frame as JPEG and convert to base64"""
+    def encode_frame(frame: cv2.Mat) -> str:
+        """Encode frame as JPEG and convert to base64
+
+        Args:
+            frame (cv2.Mat): The video frame to encode.
+
+        Returns:
+            str: Base64 encoded JPEG image.
+
+        """
         _, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
         return base64.b64encode(frame_bytes).decode('utf-8')
     
-    async def send_frame(self, frame, frame_id):
-        """Send a single frame to Kafka"""
+    async def send_frame(self, frame: cv2.Mat, frame_id: str):
+        """Send a single frame to Kafka
+
+        Args:
+            frame (cv2.Mat): The video frame to send.
+            frame_id (str): Unique identifier for the frame.
+
+        """
         try:
             # Encode frame
             encoded_frame = self.encode_frame(frame)
@@ -64,8 +85,15 @@ class VideoFrameProducer:
         except Exception as e:
             logger.error(f"Error sending frame {frame_id}: {str(e)}")
     
-    async def stream_video_file(self, video_path: str, max_frames: int | None = None, fps_limit: int = 10):
-        """Stream frames from a video file"""
+    async def stream_video_file(self, video_path: str, max_frames: int | None = None, fps_limit: int = 10)-> None:
+        """Stream frames from a video file
+
+        Args:
+            video_path (str): Path to the video file.
+            max_frames (int | None): Maximum number of frames to send. If None, send all frames.
+            fps_limit (int): Frames per second limit for streaming. Default is 10.
+
+        """
         logger.info(f"Starting to stream video: {video_path}")
         self.start_time = time.time()
         
@@ -104,8 +132,15 @@ class VideoFrameProducer:
         logger.info(f"Streaming complete. Sent {self.frame_count} frames in {total_time:.2f} seconds")
         logger.info(f"Average FPS: {self.frame_count / total_time:.2f}")
     
-    async def stream_webcam(self, camera_id: int = 0, duration_seconds: int = 30, fps_limit: int = 10):
-        """Stream frames from webcam"""
+    async def stream_webcam(self, camera_id: int = 0, duration_seconds: int = 30, fps_limit: int = 10)-> None:
+        """Stream frames from webcam
+
+        Args:
+            camera_id (int): Camera ID to use. Default is 0.
+            duration_seconds (int): Duration to stream in seconds. Default is 30.
+            fps_limit (int): Frames per second limit for streaming. Default is 10.
+
+        """
         logger.info(f"Starting webcam stream for {duration_seconds} seconds")
         self.start_time = time.time()
         print(f"start time: {self.start_time}")
