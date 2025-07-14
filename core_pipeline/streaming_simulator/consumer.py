@@ -35,7 +35,9 @@ class InferenceConsumer:
             "total_inference_time": 0,
             "start_time": None,
             "inference_times": [],
-            "errors": 0
+            "errors": 0,
+            "active_time": 0,
+            "last_frame_time": None
         }
     
     async def initialize(self):
@@ -139,6 +141,17 @@ class InferenceConsumer:
     
     def update_metrics(self, inference_time):
         """Update performance metrics"""
+
+        current_time = time.time()
+
+        # Track active time vs idle time
+        if self.metrics["last_frame_time"] is not None:
+            gap = current_time - self.metrics["last_frame_time"]
+            if gap < 1.0:  # Consider gaps less than 1 second as active time
+                self.metrics["active_time"] += gap
+
+        self.metrics["last_frame_time"] = current_time
+
         self.metrics["frames_processed"] += 1
         self.metrics["total_inference_time"] += inference_time
         self.metrics["inference_times"].append(inference_time)
@@ -149,34 +162,46 @@ class InferenceConsumer:
     
     def print_metrics(self):
         """Print current performance metrics"""
-        if self.metrics["start_time"] is None:
+        if self.metrics["start_time"] is None or self.metrics["frames_processed"] == 0:
             return
             
         total_time = time.time() - self.metrics["start_time"]
         frames = self.metrics["frames_processed"]
-        
-        if frames == 0:
-            return
-        
+        active_time = self.metrics["active_time"]
+
+        # Calculate derived metrics
         avg_fps = frames / total_time if total_time > 0 else 0
+        active_fps = frames / active_time if active_time > 0 else 0
         avg_inference_time = self.metrics["total_inference_time"] / frames
-        
+
         recent_times = self.metrics["inference_times"]
         recent_avg = sum(recent_times) / len(recent_times) if recent_times else 0
-        
-        logger.info("\n" + "="*50)
+
+        logger.info("=" * 50)
         logger.info("PERFORMANCE METRICS")
-        logger.info("="*50)
-        logger.info(f"Total runtime: {total_time:.1f} seconds")
-        logger.info(f"Frames processed: {frames}")
-        logger.info(f"Errors: {self.metrics['errors']}")
-        logger.info(f"Average FPS: {avg_fps:.2f}")
-        logger.info(f"Average inference time: {avg_inference_time:.3f}s")
-        logger.info(f"Recent avg inference time: {recent_avg:.3f}s")
+        logger.info("=" * 50)
+
+        # Throughput metrics
+        logger.info("THROUGHPUT:")
+        logger.info(f"  Frames processed: {frames}")
+        logger.info(f"  Overall FPS: {avg_fps:.2f} (across {total_time:.1f}s total runtime)")
+        logger.info(f"  Effective FPS: {active_fps:.2f} (across {active_time:.1f}s active time)")
+
+        # Processing time metrics
+        logger.info("PROCESSING TIME:")
+        logger.info(f"  Average inference time: {avg_inference_time * 1000:.1f}ms")
+        logger.info(f"  Recent average (last {len(recent_times)} frames): {recent_avg * 1000:.1f}ms")
+
         if recent_times:
-            logger.info(f"Min inference time: {min(recent_times):.3f}s")
-            logger.info(f"Max inference time: {max(recent_times):.3f}s")
-        logger.info("="*50)
+            logger.info(f"  Range: {min(recent_times) * 1000:.1f}ms - {max(recent_times) * 1000:.1f}ms")
+
+        # Error metrics
+        logger.info("ERRORS:")
+        logger.info(f"  Total errors: {self.metrics['errors']}")
+        error_rate = self.metrics["errors"] / frames if frames > 0 else 0
+        logger.info(f"  Error rate: {error_rate * 100:.2f}%")
+
+        logger.info("=" * 50)
     
     async def consume_and_classify(self, duration_seconds=30):
         """Main consumer loop"""
