@@ -18,6 +18,7 @@ A real-time video inference system with two implementations: a core pipeline fol
 │   └── requirements.txt   # dependencies created with uv
 └── uv.lock                # UV package manager lock file
 └── pyproject.toml         # UV package manager configuration
+```
 
 ## Quick Setup
 
