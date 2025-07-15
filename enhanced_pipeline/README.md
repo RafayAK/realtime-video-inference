@@ -1,6 +1,12 @@
 # Enhanced Video Inference Pipeline
 
-A real-time video inference pipeline with web interface, built using FastAPI, Triton Inference Server, and Kafka streaming.
+A real-time video inference pipeline with web interface, built using FastAPI, Triton Inference Server, and Kafka (RedPanda) streaming.
+
+
+
+https://github.com/user-attachments/assets/590928dd-5522-4a2b-a0d4-9d79fb00c52f
+
+
 
 ## Features
 
