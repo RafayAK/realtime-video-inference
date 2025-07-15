@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Webcam Inference</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4 text-white text-lg">
+        Real-time Webcam Inference Pipeline
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex flex-row h-screen">
+
+        <!-- Left Column -->
+        <div class="w-1/3 p-4">
+            <div class="flex flex-col items-center">
+                <button id="webcamButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Start Webcam
+                </button>
+                <button id="stopButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2" style="display: none;">
+                    Stop Processing
+                </button>
+                
+                <!-- FPS Controls -->
+                <div class="mt-4 flex items-center space-x-2">
+                    <button id="fpsDecrease" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-sm">
+                        -5 FPS
+                    </button>
+                    <span id="targetFPS" class="text-sm font-semibold">Target: 10 FPS</span>
+                    <button id="fpsIncrease" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-sm">
+                        +5 FPS
+                    </button>
+                </div>
+                
+                <video id="webcamVideo" class="mt-4 max-h-64" autoplay muted style="display: none;"></video>
+                <canvas id="frameCanvas" style="display: none;"></canvas>
+                <div class="mt-4">
+                    <p id="fpsCounter" class="text-sm text-gray-600">FPS: 0</p>
+                    <p id="frameCounter" class="text-sm text-gray-600">Frames this second: 0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="w-2/3 p-4">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">Live Classification Results</h2>
+                
+                <!-- Current Classification -->
+                <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Current Prediction:</h3>
+                    <div id="currentClassification" class="text-3xl font-bold text-blue-600">
+                        Ready for webcam...
+                    </div>
+                    <div id="confidence" class="text-sm text-gray-600 mt-2">
+                        Confidence: --
+                    </div>
+                    <div id="inferenceTime" class="text-sm text-gray-600">
+                        Inference Time: --
+                    </div>
+                </div>
+
+                <!-- Recent Classifications -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Recent Classifications:</h3>
+                    <div id="recentClassifications" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Recent results will be added here -->
+                    </div>
+                </div>
+
+                <!-- Performance Stats -->
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="p-3 bg-green-50 rounded">
+                        <div class="text-2xl font-bold text-green-600" id="totalFrames">0</div>
+                        <div class="text-sm text-gray-600">Total Frames</div>
+                    </div>
+                    <div class="p-3 bg-yellow-50 rounded">
+                        <div class="text-2xl font-bold text-yellow-600" id="avgFPS">0.0</div>
+                        <div class="text-sm text-gray-600">Avg FPS</div>
+                    </div>
+                    <div class="p-3 bg-purple-50 rounded">
+                        <div class="text-2xl font-bold text-purple-600" id="avgInference">0.0ms</div>
+                        <div class="text-sm text-gray-600">Avg Inference</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
